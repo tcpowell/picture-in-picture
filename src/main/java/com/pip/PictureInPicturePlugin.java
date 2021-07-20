@@ -144,7 +144,7 @@ public class PictureInPicturePlugin extends Plugin
 				pipFrame.setAlwaysOnTop(true);
 
 				pipFrame.addMouseListener(new MouseAdapter() {
-					public void mouseClicked(MouseEvent e) {
+					public void mousePressed(MouseEvent e) {
 						pipClicked();
 					}
 				});
