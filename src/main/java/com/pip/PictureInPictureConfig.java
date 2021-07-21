@@ -36,6 +36,35 @@ public interface PictureInPictureConfig extends Config
 		}
 	}
 
+	enum redrawRate
+	{
+		FASTEST("Fastest", 2),
+		STANDARD("Standard", 4),
+		SLOWER("Slower", 8),
+		SLOWEST("Slowest", 16)
+		;
+
+		private String value;
+		private int id;
+
+		redrawRate(String value, int id)
+		{
+			this.value = value;
+			this.id = id;
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.value;
+		}
+
+		public int toInt()
+		{
+			return this.id;
+		}
+	}
+
 	enum targetSize
 	{
 		SMALL("320 x 180", 320, 180),
@@ -126,10 +155,18 @@ public interface PictureInPictureConfig extends Config
 	default quadrant quadrantID() { return quadrant.BOTTOM_RIGHT; }
 
 	@ConfigItem(
+			keyName = "redrawRate",
+			name = "Redraw Rate",
+			description = "Configures the redraw rate of the Picture in Picture",
+			position = 1
+	)
+	default redrawRate redrawRate() { return redrawRate.STANDARD; }
+
+	@ConfigItem(
 			keyName = "paddingX",
 			name = "Horizontal Padding",
 			description = "The horizontal padding (in pixels) from the left/right edge of the screen",
-			position = 1
+			position = 2
 	)
 	default int paddingX() { return 40; }
 
@@ -137,7 +174,7 @@ public interface PictureInPictureConfig extends Config
 			keyName = "paddingY",
 			name = "Vertical Padding",
 			description = "The vertical padding (in pixels) from the top/bottom edge of the screen",
-			position = 2
+			position = 3
 	)
 	default int paddingY() { return 25; }
 
@@ -145,7 +182,7 @@ public interface PictureInPictureConfig extends Config
 			keyName = "targetSize",
 			name = "Target Size",
 			description = "Specifies the target size of the Picture in Picture",
-			position = 3
+			position = 4
 	)
 	default targetSize targetSize() { return targetSize.MEDIUM; }
 
@@ -153,7 +190,7 @@ public interface PictureInPictureConfig extends Config
 			keyName = "limitedDimension",
 			name = "Limited Dimension",
 			description = "Configures which dimension is limited when not 16:9",
-			position = 4
+			position = 5
 	)
 	default limitedDimension limitedDimension() { return limitedDimension.HEIGHT; }
 
@@ -161,7 +198,7 @@ public interface PictureInPictureConfig extends Config
 			keyName = "clickAction",
 			name = "Click Action",
 			description = "Action to perform when the Picture in Picture is clicked",
-			position = 5
+			position = 6
 	)
 	default clickAction clickAction() { return clickAction.FOCUS; }
 

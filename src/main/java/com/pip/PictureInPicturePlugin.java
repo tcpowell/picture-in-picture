@@ -38,6 +38,7 @@ public class PictureInPicturePlugin extends Plugin
 	private static boolean pipUp = false;
 	private JFrame pipFrame = null;
 	private JLabel lbl = null;
+	private int clientTick = 0;
 	private int pipWidth, pipHeight;
 	private double pipScale;
 
@@ -90,19 +91,24 @@ public class PictureInPicturePlugin extends Plugin
 	@Subscribe
 	public void onClientTick(ClientTick event)
 	{
-		if (focused != clientUi.isFocused()) {
-			focused = clientUi.isFocused();
-			if (focused)
-				destroyPip();
-		}
-		if (!focused) {
-			if (pipFrame != null) {
-				if (pipUp) {
-					updatePip();
-					//log.debug("PIP updated");
+		if(clientTick % config.redrawRate().toInt()==0) {
+			clientTick = 0;
+
+			if (focused != clientUi.isFocused()) {
+				focused = clientUi.isFocused();
+				if (focused)
+					destroyPip();
+			}
+			if (!focused) {
+				if (pipFrame != null) {
+					if (pipUp) {
+						updatePip();
+						//log.debug("PIP updated");
+					}
 				}
 			}
 		}
+		clientTick++;
 	}
 
 	@Provides
