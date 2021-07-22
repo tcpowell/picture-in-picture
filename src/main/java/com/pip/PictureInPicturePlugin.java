@@ -197,7 +197,7 @@ public class PictureInPicturePlugin extends Plugin
 		log.debug("PIP Clicked");
 		if (config.clickAction().clickMode() == 0) {
 			destroyPip();
-			clientUi.forceFocus();
+			clientUi.requestFocus();
 		}
 	}
 
