@@ -3,6 +3,7 @@ package com.pip;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import java.awt.RenderingHints;
 
 @ConfigGroup("pip")
 public interface PictureInPictureConfig extends Config
@@ -122,8 +123,9 @@ public interface PictureInPictureConfig extends Config
 
 	enum clickAction
 	{
-		FOCUS("Focus RuneLite", 0),
-		NOTHING("Do Nothing", 1)
+		REQUEST("Request Focus", 0),
+		FORCE("Force Focus", 1),
+		NOTHING("Do Nothing", 2)
 		;
 
 		private String value;
@@ -146,6 +148,46 @@ public interface PictureInPictureConfig extends Config
 		}
 	}
 
+	enum renderQuality
+	{
+		LOW("Low", RenderingHints.VALUE_RENDER_SPEED, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR, 1),
+		MEDIUM("Medium", RenderingHints.VALUE_RENDER_QUALITY, RenderingHints.VALUE_INTERPOLATION_BILINEAR, 1),
+		HIGH("High", RenderingHints.VALUE_RENDER_QUALITY, RenderingHints.VALUE_INTERPOLATION_BILINEAR, 2)
+		;
+
+		private String value;
+		private Object quality;
+		private Object hint;
+		private int redraw;
+
+		renderQuality(String value, Object quality, Object hint, int redraw)
+		{
+			this.value = value;
+			this.quality = quality;
+			this.hint = hint;
+			this.redraw = redraw;
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.value;
+		}
+		public Object getQuality()
+		{
+			return this.quality;
+		}
+		public Object getHint()
+		{
+			return this.hint;
+		}
+		public int getRedraw()
+		{
+			return this.redraw;
+		}
+
+	}
+
 	@ConfigItem(
 			keyName = "quadrantID",
 			name = "Position",
@@ -163,10 +205,18 @@ public interface PictureInPictureConfig extends Config
 	default redrawRate redrawRate() { return redrawRate.STANDARD; }
 
 	@ConfigItem(
+			keyName = "renderQuality",
+			name = "Render Quality",
+			description = "Configures the render quality of the Picture in Picture",
+			position = 2
+	)
+	default renderQuality renderQuality() { return renderQuality.MEDIUM; }
+
+	@ConfigItem(
 			keyName = "paddingX",
 			name = "Horizontal Padding",
 			description = "The horizontal padding (in pixels) from the left/right edge of the screen",
-			position = 2
+			position = 3
 	)
 	default int paddingX() { return 40; }
 
@@ -174,7 +224,7 @@ public interface PictureInPictureConfig extends Config
 			keyName = "paddingY",
 			name = "Vertical Padding",
 			description = "The vertical padding (in pixels) from the top/bottom edge of the screen",
-			position = 3
+			position = 4
 	)
 	default int paddingY() { return 25; }
 
@@ -182,7 +232,7 @@ public interface PictureInPictureConfig extends Config
 			keyName = "targetSize",
 			name = "Target Size",
 			description = "Specifies the target size of the Picture in Picture",
-			position = 4
+			position = 5
 	)
 	default targetSize targetSize() { return targetSize.MEDIUM; }
 
@@ -190,7 +240,7 @@ public interface PictureInPictureConfig extends Config
 			keyName = "limitedDimension",
 			name = "Limited Dimension",
 			description = "Configures which dimension is limited when not 16:9",
-			position = 5
+			position = 6
 	)
 	default limitedDimension limitedDimension() { return limitedDimension.HEIGHT; }
 
@@ -198,8 +248,8 @@ public interface PictureInPictureConfig extends Config
 			keyName = "clickAction",
 			name = "Click Action",
 			description = "Action to perform when the Picture in Picture is clicked",
-			position = 6
+			position = 7
 	)
-	default clickAction clickAction() { return clickAction.FOCUS; }
+	default clickAction clickAction() { return clickAction.REQUEST; }
 
 }

@@ -1,8 +1,6 @@
 package com.pip;
 
 import com.google.inject.Provides;
-
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
@@ -18,8 +16,6 @@ import net.runelite.client.ui.DrawManager;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import javax.swing.*;
@@ -33,7 +29,6 @@ import javax.swing.*;
 )
 public class PictureInPicturePlugin extends Plugin
 {
-
 	private static boolean focused = true;
 	private static boolean pipUp = false;
 	private JFrame pipFrame = null;
@@ -117,22 +112,22 @@ public class PictureInPicturePlugin extends Plugin
 		return configManager.getConfig(PictureInPictureConfig.class);
 	}
 
-	public void startPip(Image screenshot) {
+	private void startPip(Image image) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				if (config.limitedDimension().toString().equals("Width")) {
 					pipWidth = config.targetSize().getWidth();
-					pipScale = (double) pipWidth / (double) screenshot.getWidth(null) ;
-					pipHeight = (int) (screenshot.getHeight(null) * pipScale);
+					pipScale = (double) pipWidth / (double) image.getWidth(null) ;
+					pipHeight = (int) (image.getHeight(null) * pipScale);
 				}
 				else {
 					pipHeight = config.targetSize().getHeight();
-					pipScale = (double) pipHeight / (double) screenshot.getHeight(null);
-					pipWidth = (int) (screenshot.getWidth(null) * pipScale);
+					pipScale = (double) pipHeight / (double) image.getHeight(null);
+					pipWidth = (int) (image.getWidth(null) * pipScale);
 				}
 
-				Image img = screenshot.getScaledInstance(pipWidth, pipHeight, Image.SCALE_FAST);
+				Image img = pipScale(image);
 				ImageIcon icon=new ImageIcon(img);
 
 				pipFrame=new JFrame();
@@ -181,10 +176,9 @@ public class PictureInPicturePlugin extends Plugin
 				pipUp = true;
 			}
 		});
-
 	}
 
-	public void destroyPip() {
+	private void destroyPip() {
 		if (pipFrame != null) {
 			pipFrame.setVisible(false);
 			pipFrame.dispose();
@@ -193,16 +187,20 @@ public class PictureInPicturePlugin extends Plugin
 		}
 	}
 
-	public void pipClicked() {
+	private void pipClicked() {
 		log.debug("PIP Clicked");
 		if (config.clickAction().clickMode() == 0) {
 			destroyPip();
 			clientUi.requestFocus();
 		}
+		else if (config.clickAction().clickMode() == 1) {
+			destroyPip();
+			clientUi.forceFocus();
+		}
 	}
 
 	//runs first to initialize pip
-	public void initializePip() {
+	private void initializePip() {
 		Consumer<Image> imageCallback = (img) ->
 		{
 			executor.submit(() -> startPip(img));
@@ -211,7 +209,7 @@ public class PictureInPicturePlugin extends Plugin
 	}
 
 	//updates if pip is already up
-	public void updatePip() {
+	private void updatePip() {
 		Consumer<Image> imageCallback = (img) ->
 		{
 			executor.submit(() -> updatePip(img));
@@ -220,11 +218,11 @@ public class PictureInPicturePlugin extends Plugin
 	}
 
 	//update image
-	public void updatePip (Image image) {
+	private void updatePip (Image image) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				Image img = image.getScaledInstance(pipWidth, pipHeight, Image.SCALE_FAST);
+				Image img = pipScale(image);
 				ImageIcon icon = new ImageIcon(img);
 				icon.getImage().flush();
 				lbl.setIcon(icon);
@@ -232,17 +230,41 @@ public class PictureInPicturePlugin extends Plugin
 		});
 	}
 
-	//test only (take screenshot)
-	public void takeScreenshot(Image image) {
-		BufferedImage screenshot = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-		Graphics graphics = screenshot.getGraphics();
-		graphics.drawImage(image, 0, 0, null);
+	private Image pipScale(Image originalImage) {
 
-		File f = new File("clientImage.png");
-		try {
-			ImageIO.write(screenshot, "PNG", f);
-		} catch (IOException e) {
-			e.printStackTrace();
+		int samples = config.renderQuality().getRedraw();
+		RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		hints.add(new RenderingHints(RenderingHints.KEY_RENDERING, config.renderQuality().getQuality()));
+		hints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION, config.renderQuality().getHint()));
+
+		if (pipScale>1)
+			return originalImage;
+
+		BufferedImage returnImage = (BufferedImage) originalImage;
+
+		int w = originalImage.getWidth(null);
+		int h = originalImage.getHeight(null);
+		int incW = (w - pipWidth) / samples;
+		int incH = (h - pipHeight) / samples;
+
+		for (int i=1; i<=samples; i++) {
+
+			if (i==samples) {
+				w = pipWidth;
+				h = pipHeight;
+			}
+			else {
+				w -= incW;
+				h -= incH;
+			}
+
+			BufferedImage tempImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g2 = tempImage.createGraphics();
+			g2.setRenderingHints(hints);
+			g2.drawImage(returnImage, 0, 0, w, h, null);
+			g2.dispose();
+			returnImage = tempImage;
 		}
+		return returnImage;
 	}
 }

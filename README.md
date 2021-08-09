@@ -2,7 +2,7 @@
 Allows for displaying RuneLite in "Picture in Picture" mode when focus is elsewhere.
 
 ## Configuration Options
-![](https://i.imgur.com/OadcVuM.png)
+![](https://github.com/dekuScrub731/images/blob/master/picture-in-picture-config.png)
 
 ## Sample Screenshot
-![](https://i.imgur.com/pA71gZE.png)
+![](https://github.com/dekuScrub731/images/blob/master/picture-in-picture-screenshot.png)
