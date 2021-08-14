@@ -36,16 +36,13 @@ public class PictureInPicturePlugin extends Plugin
 	private JFrame pipFrame = null;
 	private JLabel lbl = null;
 	private pipBar leftBar, rightBar;
+	private Skill leftSkill, rightSkill;
 
 	private int clientTick = 0;
 	private int pipWidth, pipHeight;
 	private double pipScale;
 	private int maxHealth, currentHealth, maxPrayer, currentPrayer;
 	private Color[] healthColor;
-	private static final int GAP = 3;
-	private static final int BAR_WIDTH = 20;
-
-	Skill leftSkill, rightSkill;
 
 	private static final Color PRAYER_COLOR = new Color(32, 160, 160);
 	private static final Color PRAYER_BG_COLOR = new Color(10, 50, 50);
@@ -72,21 +69,17 @@ public class PictureInPicturePlugin extends Plugin
 		int maxLevel;
 		int currentLevel;
 		Color[] colors;
-		int barWidth;
 
-		private pipBar(int maxLevel, int currentLevel, Color[] colors, int barWidth) {
+		private pipBar(int maxLevel, int currentLevel, Color[] colors) {
 			this.maxLevel = maxLevel;
 			this.currentLevel = currentLevel;
 			this.colors = colors;
-			this.barWidth = barWidth;
-			setFont(FontManager.getRunescapeSmallFont());
 		}
 
-		private void updateBar(int maxLevel, int currentLevel, Color[] colors, int barWidth) {
+		private void updateBar(int maxLevel, int currentLevel, Color[] colors) {
 			this.maxLevel = maxLevel;
 			this.currentLevel = currentLevel;
 			this.colors = colors;
-			this.barWidth = barWidth;
 			repaint();
 		}
 
@@ -94,17 +87,17 @@ public class PictureInPicturePlugin extends Plugin
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			g.setColor(colors[0]);
-			g.fillRect(0,0,barWidth,pipHeight);
+			g.fillRect(0,0,config.getBarWidth(),pipHeight);
 			int bgHeight = (int) ((maxLevel - currentLevel)*pipHeight/((float) maxLevel));
 			g.setColor(colors[1]);
-			g.fillRect(0, 0, barWidth, bgHeight);
+			g.fillRect(0, 0, config.getBarWidth(), bgHeight);
 
-			if (config.barText()) {
+			if (config.barText() && config.getBarWidth() >= 15) {
 				g.setFont(FontManager.getRunescapeSmallFont());
 
 				String text = String.valueOf(currentLevel);
 				int y = 20;
-				int x = BAR_WIDTH / 2 - g.getFontMetrics().stringWidth(text) / 2;
+				int x = config.getBarWidth() / 2 - g.getFontMetrics().stringWidth(text) / 2;
 
 				//text outline
 				g.setColor(Color.BLACK);
@@ -121,7 +114,7 @@ public class PictureInPicturePlugin extends Plugin
 
 		@Override
 		public Dimension getPreferredSize() {
-			return new Dimension(20, pipHeight); // appropriate constants
+			return new Dimension(config.getBarWidth(), pipHeight);
 		}
 	}
 
@@ -198,7 +191,7 @@ public class PictureInPicturePlugin extends Plugin
 		}
 		clientTick++;
 
-		//split this from the pip (bars can update more frequently if needed
+		//split this from the pip (bars can update more frequently if needed)
 		if (!focused) {
 			if (pipFrame != null) {
 				if (pipUp) {
@@ -239,7 +232,7 @@ public class PictureInPicturePlugin extends Plugin
 		leftSkill = config.leftBar().getSkill();
 		rightSkill = config.rightBar().getSkill();
 
-		final int offset = ((leftSkill != null) ? GAP + BAR_WIDTH : 0) + ((rightSkill != null) ? GAP + BAR_WIDTH : 0);
+		final int offset = 2 * config.borderWidth() + ((leftSkill != null) ? config.borderWidth() + config.getBarWidth() : 0) + ((rightSkill != null) ? config.borderWidth() + config.getBarWidth() : 0);
 
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -261,21 +254,21 @@ public class PictureInPicturePlugin extends Plugin
 				pipFrame=new JFrame();
 				pipFrame.setFocusableWindowState(false);
 				pipFrame.setType(Window.Type.UTILITY);
-				pipFrame.setLayout(new FlowLayout(FlowLayout.LEFT, GAP, GAP));
-				pipFrame.setSize(img.getWidth(null)+offset,img.getHeight(null));
+				pipFrame.setLayout(new FlowLayout(FlowLayout.LEFT, config.borderWidth(), config.borderWidth()));
+				pipFrame.setSize(img.getWidth(null) + offset, img.getHeight(null));
 				lbl=new JLabel();
 				lbl.setIcon(icon);
 				pipFrame.setUndecorated(true);
 
 				//pull in bar info from config
 				if (leftSkill == Skill.HITPOINTS)
-					leftBar = new pipBar(maxHealth, currentHealth, healthColor, BAR_WIDTH);
+					leftBar = new pipBar(maxHealth, currentHealth, healthColor);
 				else if (leftSkill == Skill.PRAYER)
-					leftBar = new pipBar(maxPrayer, currentPrayer, PRAYER, BAR_WIDTH);
+					leftBar = new pipBar(maxPrayer, currentPrayer, PRAYER);
 				if (rightSkill == Skill.HITPOINTS)
-					rightBar = new pipBar(maxHealth, currentHealth, healthColor, BAR_WIDTH);
+					rightBar = new pipBar(maxHealth, currentHealth, healthColor);
 				else if (rightSkill == Skill.PRAYER)
-					rightBar = new pipBar(maxPrayer, currentPrayer, PRAYER, BAR_WIDTH);
+					rightBar = new pipBar(maxPrayer, currentPrayer, PRAYER);
 
 				//set the order of bars and pip window
 				if (position == 0) {
@@ -325,9 +318,9 @@ public class PictureInPicturePlugin extends Plugin
 				else if (config.quadrantID().toInt() == 2)
 					pipFrame.setLocation(config.paddingX(),config.paddingY());
 				else if (config.quadrantID().toInt() == 3)
-					pipFrame.setLocation(config.paddingX(),effectiveScreenArea.height - pipHeight - config.paddingY());
+					pipFrame.setLocation(config.paddingX(),effectiveScreenArea.height - pipHeight - config.paddingY() - 2 * config.borderWidth());
 				else
-					pipFrame.setLocation(effectiveScreenArea.width - pipWidth - config.paddingX() - offset,effectiveScreenArea.height - pipHeight - config.paddingY());
+					pipFrame.setLocation(effectiveScreenArea.width - pipWidth - config.paddingX() - offset,effectiveScreenArea.height - pipHeight - config.paddingY() - 2 * config.borderWidth());
 
 				// Display the window.
 				pipFrame.pack();
@@ -395,13 +388,13 @@ public class PictureInPicturePlugin extends Plugin
 			@Override
 			public void run() {
 				if (leftSkill == Skill.HITPOINTS)
-					leftBar.updateBar(maxHealth, currentHealth, healthColor, BAR_WIDTH);
+					leftBar.updateBar(maxHealth, currentHealth, healthColor);
 				else if (leftSkill == Skill.PRAYER)
-					leftBar.updateBar(maxPrayer, currentPrayer, PRAYER, BAR_WIDTH);
+					leftBar.updateBar(maxPrayer, currentPrayer, PRAYER);
 				if (rightSkill == Skill.HITPOINTS)
-					rightBar.updateBar(maxHealth, currentHealth, healthColor, BAR_WIDTH);
+					rightBar.updateBar(maxHealth, currentHealth, healthColor);
 				else if (rightSkill == Skill.PRAYER)
-					rightBar.updateBar(maxPrayer, currentPrayer, PRAYER, BAR_WIDTH);
+					rightBar.updateBar(maxPrayer, currentPrayer, PRAYER);
 			}
 		});
 	}
