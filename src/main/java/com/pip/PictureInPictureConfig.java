@@ -1,5 +1,7 @@
 package com.pip;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.runelite.api.Skill;
 import net.runelite.client.config.*;
 
@@ -8,35 +10,31 @@ import java.awt.RenderingHints;
 @ConfigGroup("pip")
 public interface PictureInPictureConfig extends Config
 {
-	enum quadrant
-	{
+	@Getter
+	@RequiredArgsConstructor
+	enum quadrant {
 		BOTTOM_RIGHT("Bottom Right", 4),
 		BOTTOM_LEFT("Bottom Left", 3),
 		TOP_LEFT("Top Left", 2),
 		TOP_RIGHT("Top Right", 1)
 		;
 
-		private String value;
-		private int id;
-
-		quadrant(String value, int id)
-		{
-			this.value = value;
-			this.id = id;
-		}
+		private final String value;
+		private final int id;
 
 		@Override
 		public String toString()
 		{
-			return this.value;
+			return value;
 		}
-
 		public int toInt()
 		{
-			return this.id;
+			return id;
 		}
 	}
 
+	@Getter
+	@RequiredArgsConstructor
 	enum redrawRate
 	{
 		FASTEST("Fastest", 2),
@@ -45,27 +43,23 @@ public interface PictureInPictureConfig extends Config
 		SLOWEST("Slowest", 16)
 		;
 
-		private String value;
-		private int id;
-
-		redrawRate(String value, int id)
-		{
-			this.value = value;
-			this.id = id;
-		}
+		private final String value;
+		private final int id;
 
 		@Override
 		public String toString()
 		{
-			return this.value;
+			return value;
 		}
 
 		public int toInt()
 		{
-			return this.id;
+			return id;
 		}
 	}
 
+	@Getter
+	@RequiredArgsConstructor
 	enum targetSize
 	{
 		SMALL("320 x 180", 320, 180),
@@ -74,53 +68,45 @@ public interface PictureInPictureConfig extends Config
 		XLARGE("800 x 450", 800, 450)
 		;
 
-		private String value;
-		private int width;
-		private int height;
-
-		targetSize(String value, int width, int height)
-		{
-			this.value = value;
-			this.width = width;
-			this.height = height;
-		}
+		private final String value;
+		private final int width;
+		private final int height;
 
 		@Override
 		public String toString()
 		{
-			return this.value;
+			return value;
 		}
 		public int getHeight()
 		{
-			return this.height;
+			return height;
 		}
 		public int getWidth()
 		{
-			return this.width;
+			return width;
 		}
 	}
 
+	@Getter
+	@RequiredArgsConstructor
 	enum limitedDimension
 	{
 		HEIGHT("Height"),
 		WIDTH("Width")
 		;
 
-		private String value;
-
-		limitedDimension(String value)
-		{
-			this.value = value;
-		}
+		private final String value;
 
 		@Override
 		public String toString()
 		{
-			return this.value;
+			return value;
 		}
 
 	}
 
+	@Getter
+	@RequiredArgsConstructor
 	enum clickAction
 	{
 		REQUEST("Request Focus", 0),
@@ -128,14 +114,8 @@ public interface PictureInPictureConfig extends Config
 		NOTHING("Do Nothing", 2)
 		;
 
-		private String value;
-		private int action;
-
-		clickAction(String value, int action)
-		{
-			this.action = action;
-			this.value = value;
-		}
+		private final String value;
+		private final int action;
 
 		@Override
 		public String toString()
@@ -144,10 +124,12 @@ public interface PictureInPictureConfig extends Config
 		}
 		public int clickMode()
 		{
-			return this.action;
+			return action;
 		}
 	}
 
+	@Getter
+	@RequiredArgsConstructor
 	enum renderQuality
 	{
 		LOW("Low", RenderingHints.VALUE_RENDER_SPEED, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR, 1),
@@ -155,39 +137,33 @@ public interface PictureInPictureConfig extends Config
 		HIGH("High", RenderingHints.VALUE_RENDER_QUALITY, RenderingHints.VALUE_INTERPOLATION_BILINEAR, 2)
 		;
 
-		private String value;
-		private Object quality;
-		private Object hint;
-		private int redraw;
-
-		renderQuality(String value, Object quality, Object hint, int redraw)
-		{
-			this.value = value;
-			this.quality = quality;
-			this.hint = hint;
-			this.redraw = redraw;
-		}
+		private final String value;
+		private final Object quality;
+		private final Object hint;
+		private final int redraw;
 
 		@Override
 		public String toString()
 		{
-			return this.value;
+			return value;
 		}
 		public Object getQuality()
 		{
-			return this.quality;
+			return quality;
 		}
 		public Object getHint()
 		{
-			return this.hint;
+			return hint;
 		}
 		public int getRedraw()
 		{
-			return this.redraw;
+			return redraw;
 		}
 
 	}
 
+	@Getter
+	@RequiredArgsConstructor
 	enum barType
 	{
 		HITPOINTS("Hitpoints", Skill.HITPOINTS),
@@ -195,26 +171,22 @@ public interface PictureInPictureConfig extends Config
 		NONE("Disabled", null)
 		;
 
-		private String value;
-		private Skill skill;
-
-		barType(String value, Skill skill)
-		{
-			this.value = value;
-			this.skill = skill;
-		}
+		private final String value;
+		private final Skill skill;
 
 		@Override
 		public String toString()
 		{
-			return this.value;
+			return value;
 		}
 		public Skill getSkill()
 		{
-			return this.skill;
+			return skill;
 		}
 	}
 
+	@Getter
+	@RequiredArgsConstructor
 	enum barPosition
 	{
 		BEFORE("Before", 0),
@@ -222,23 +194,17 @@ public interface PictureInPictureConfig extends Config
 		OUTSIDE("Outside", 2)
 		;
 
-		private String value;
-		private int position;
-
-		barPosition(String value, int position)
-		{
-			this.value = value;
-			this.position = position;
-		}
+		private final String value;
+		private final int position;
 
 		@Override
 		public String toString()
 		{
-			return this.value;
+			return value;
 		}
 		public int getPosition()
 		{
-			return this.position;
+			return position;
 		}
 	}
 
@@ -318,6 +284,15 @@ public interface PictureInPictureConfig extends Config
 			section = sizeAndPosition
 	)
 	default clickAction clickAction() { return clickAction.REQUEST; }
+
+	@ConfigItem(
+			keyName = "preserveShiftDrag",
+			name = "Preserve Shift+Drag",
+			description = "Save the PIP location following Shift+Drag",
+			position = 7,
+			section = sizeAndPosition
+	)
+	default boolean preserveShiftDrag() { return true; }
 
 
 	// =========== Image Quality ===========

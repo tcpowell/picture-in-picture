@@ -9,6 +9,10 @@ Allows for displaying RuneLite in "Picture in Picture" mode when focus is elsewh
 
 ## Change Log
 
+### 1.4
+- Added Shift+Drag functionality to reposition the picture in picture window
+- Code cleanup
+
 ### 1.3
 - Added configurable status bars for hitpoints and prayer
 - Added configuration option for border width
