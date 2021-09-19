@@ -25,7 +25,7 @@ public interface PictureInPictureConfig extends Config
 		@Override
 		public String toString()
 		{
-			return value;
+			return this.value;
 		}
 
 	}
@@ -46,7 +46,7 @@ public interface PictureInPictureConfig extends Config
 		@Override
 		public String toString()
 		{
-			return value;
+			return this.value;
 		}
 
 	}
@@ -68,7 +68,7 @@ public interface PictureInPictureConfig extends Config
 		@Override
 		public String toString()
 		{
-			return value;
+			return this.value;
 		}
 	}
 
@@ -85,7 +85,7 @@ public interface PictureInPictureConfig extends Config
 		@Override
 		public String toString()
 		{
-			return value;
+			return this.value;
 		}
 
 	}
@@ -106,7 +106,7 @@ public interface PictureInPictureConfig extends Config
 		@Override
 		public String toString()
 		{
-			return value;
+			return this.value;
 		}
 
 	}
@@ -128,7 +128,7 @@ public interface PictureInPictureConfig extends Config
 		@Override
 		public String toString()
 		{
-			return value;
+			return this.value;
 		}
 
 	}
@@ -148,7 +148,7 @@ public interface PictureInPictureConfig extends Config
 		@Override
 		public String toString()
 		{
-			return value;
+			return this.value;
 		}
 
 	}
@@ -168,7 +168,7 @@ public interface PictureInPictureConfig extends Config
 		@Override
 		public String toString()
 		{
-			return value;
+			return this.value;
 		}
 
 	}
@@ -258,18 +258,6 @@ public interface PictureInPictureConfig extends Config
 			section = sizeAndPosition
 	)
 	default clickAction shiftClickAction() { return clickAction.DRAG_MODE; }
-
-
-
-
-
-
-
-
-
-
-
-
 
 	@ConfigItem(
 			keyName = "preserveShiftDrag",
