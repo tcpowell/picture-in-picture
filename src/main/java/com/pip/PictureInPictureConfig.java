@@ -27,10 +27,7 @@ public interface PictureInPictureConfig extends Config
 		{
 			return value;
 		}
-		public int toInt()
-		{
-			return id;
-		}
+
 	}
 
 	@Getter
@@ -52,10 +49,6 @@ public interface PictureInPictureConfig extends Config
 			return value;
 		}
 
-		public int toInt()
-		{
-			return id;
-		}
 	}
 
 	@Getter
@@ -76,14 +69,6 @@ public interface PictureInPictureConfig extends Config
 		public String toString()
 		{
 			return value;
-		}
-		public int getHeight()
-		{
-			return height;
-		}
-		public int getWidth()
-		{
-			return width;
 		}
 	}
 
@@ -109,9 +94,10 @@ public interface PictureInPictureConfig extends Config
 	@RequiredArgsConstructor
 	enum clickAction
 	{
-		REQUEST("Request Focus", 0),
-		FORCE("Force Focus", 1),
-		NOTHING("Do Nothing", 2)
+		REQUEST_FOCUS("Request Focus", 0),
+		FORCE_FOCUS("Force Focus", 1),
+		DRAG_MODE("Drag Mode", 2),
+		DO_NOTHING("Do Nothing", 3)
 		;
 
 		private final String value;
@@ -120,12 +106,9 @@ public interface PictureInPictureConfig extends Config
 		@Override
 		public String toString()
 		{
-			return this.value;
+			return value;
 		}
-		public int clickMode()
-		{
-			return action;
-		}
+
 	}
 
 	@Getter
@@ -147,18 +130,6 @@ public interface PictureInPictureConfig extends Config
 		{
 			return value;
 		}
-		public Object getQuality()
-		{
-			return quality;
-		}
-		public Object getHint()
-		{
-			return hint;
-		}
-		public int getRedraw()
-		{
-			return redraw;
-		}
 
 	}
 
@@ -179,10 +150,7 @@ public interface PictureInPictureConfig extends Config
 		{
 			return value;
 		}
-		public Skill getSkill()
-		{
-			return skill;
-		}
+
 	}
 
 	@Getter
@@ -202,10 +170,7 @@ public interface PictureInPictureConfig extends Config
 		{
 			return value;
 		}
-		public int getPosition()
-		{
-			return position;
-		}
+
 	}
 
 
@@ -283,13 +248,34 @@ public interface PictureInPictureConfig extends Config
 			position = 6,
 			section = sizeAndPosition
 	)
-	default clickAction clickAction() { return clickAction.REQUEST; }
+	default clickAction clickAction() { return clickAction.REQUEST_FOCUS; }
+
+	@ConfigItem(
+			keyName = "shiftClickAction",
+			name = "Shift Click Action",
+			description = "Action to perform when the Picture in Picture is shift clicked",
+			position = 7,
+			section = sizeAndPosition
+	)
+	default clickAction shiftClickAction() { return clickAction.DRAG_MODE; }
+
+
+
+
+
+
+
+
+
+
+
+
 
 	@ConfigItem(
 			keyName = "preserveShiftDrag",
 			name = "Preserve Shift+Drag",
 			description = "Save the PIP location following Shift+Drag",
-			position = 7,
+			position = 8,
 			section = sizeAndPosition
 	)
 	default boolean preserveShiftDrag() { return true; }

@@ -23,6 +23,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import javax.swing.*;
 
+import static com.pip.PictureInPictureConfig.clickAction.*;
+
 
 @Slf4j
 @PluginDescriptor(
@@ -99,11 +101,38 @@ public class PictureInPicturePlugin extends Plugin
 
 		public void mousePressed(MouseEvent e) {
 			if (e.isShiftDown()) {
-				this.startDrag = this.getScreenLocation(e);
-				this.startLocation = this.target.getLocation();
+				if (config.shiftClickAction() == DRAG_MODE) {
+					this.startDrag = this.getScreenLocation(e);
+					this.startLocation = this.target.getLocation();
+				}
+				else if (config.shiftClickAction() == REQUEST_FOCUS)
+				{
+					destroyPip();
+					clientUi.requestFocus();
+				}
+				else if (config.shiftClickAction() == FORCE_FOCUS)
+				{
+					destroyPip();
+					clientUi.forceFocus();
+				}
 			}
 			else
-				pipClicked();
+			{
+				if (config.clickAction() == DRAG_MODE) {
+					this.startDrag = this.getScreenLocation(e);
+					this.startLocation = this.target.getLocation();
+				}
+				else if (config.clickAction() == REQUEST_FOCUS)
+				{
+					destroyPip();
+					clientUi.requestFocus();
+				}
+				else if (config.clickAction() == FORCE_FOCUS)
+				{
+					destroyPip();
+					clientUi.forceFocus();
+				}
+			}
 		}
 
 		public void mouseReleased(MouseEvent e) {
@@ -111,15 +140,15 @@ public class PictureInPicturePlugin extends Plugin
 			int offset = getOffset();
 			Rectangle effectiveScreenArea = getEffectiveScreenArea();
 
-			if (config.quadrantID().toInt() == 1) {
+			if (config.quadrantID().getId() == 1) {
 				newX = effectiveScreenArea.width - pipWidth - pipPoint.x - offset;
 				newY = pipPoint.y;
 			}
-			else if (config.quadrantID().toInt() == 2) {
+			else if (config.quadrantID().getId() == 2) {
 				newX = pipPoint.x;
 				newY = pipPoint.y;
 			}
-			else if (config.quadrantID().toInt() == 3) {
+			else if (config.quadrantID().getId() == 3) {
 				newX = pipPoint.x;
 				newY = effectiveScreenArea.height - pipHeight - pipPoint.y - 2 * config.borderWidth();
 			}
@@ -255,7 +284,7 @@ public class PictureInPicturePlugin extends Plugin
 	@Subscribe
 	public void onClientTick(ClientTick event)
 	{
-		if(clientTick % config.redrawRate().toInt()==0) {
+		if(clientTick % config.redrawRate().getId()==0) {
 			clientTick = 0;
 
 			if (focused != clientUi.isFocused()) {
@@ -379,11 +408,11 @@ public class PictureInPicturePlugin extends Plugin
 				Rectangle effectiveScreenArea = getEffectiveScreenArea();
 
 				//set location
-				if (config.quadrantID().toInt() == 1)
+				if (config.quadrantID().getId() == 1)
 					pipPoint.setLocation(effectiveScreenArea.width - pipWidth - config.paddingX() - offset,config.paddingY());
-				else if (config.quadrantID().toInt() == 2)
+				else if (config.quadrantID().getId() == 2)
 					pipPoint.setLocation(config.paddingX(),config.paddingY());
-				else if (config.quadrantID().toInt() == 3)
+				else if (config.quadrantID().getId() == 3)
 					pipPoint.setLocation(config.paddingX(),effectiveScreenArea.height - pipHeight - config.paddingY() - 2 * config.borderWidth());
 				else
 					pipPoint.setLocation(effectiveScreenArea.width - pipWidth - config.paddingX() - offset,effectiveScreenArea.height - pipHeight - config.paddingY() - 2 * config.borderWidth());
@@ -423,13 +452,13 @@ public class PictureInPicturePlugin extends Plugin
 		}
 	}
 
-	private void pipClicked() {
+	private void pipClickedX() {
 		log.debug("PIP Clicked");
-		if (config.clickAction().clickMode() == 0) {
+		if (config.clickAction().getAction() == 0) {
 			destroyPip();
 			clientUi.requestFocus();
 		}
-		else if (config.clickAction().clickMode() == 1) {
+		else if (config.clickAction().getAction() == 1) {
 			destroyPip();
 			clientUi.forceFocus();
 		}
