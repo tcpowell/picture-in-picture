@@ -452,18 +452,6 @@ public class PictureInPicturePlugin extends Plugin
 		}
 	}
 
-	private void pipClickedX() {
-		log.debug("PIP Clicked");
-		if (config.clickAction().getAction() == 0) {
-			destroyPip();
-			clientUi.requestFocus();
-		}
-		else if (config.clickAction().getAction() == 1) {
-			destroyPip();
-			clientUi.forceFocus();
-		}
-	}
-
 	//runs first to initialize pip
 	private void initializePip() {
 		Consumer<Image> imageCallback = (img) ->
