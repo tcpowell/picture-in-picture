@@ -28,9 +28,9 @@ import static com.pip.PictureInPictureConfig.clickAction.*;
 
 @Slf4j
 @PluginDescriptor(
-		name = "Picture In Picture",
-		description = "Displays picture in picture mode when RuneLite is not in focus",
-		tags = {"pip", "picture", "display", "afk"}
+	name = "Picture In Picture",
+	description = "Displays picture in picture mode when RuneLite is not in focus",
+	tags = {"pip", "picture", "display", "afk"}
 )
 public class PictureInPicturePlugin extends Plugin
 {
@@ -40,7 +40,7 @@ public class PictureInPicturePlugin extends Plugin
 	private JLabel lbl = null;
 	private pipBar leftBar, rightBar;
 	private Skill leftSkill, rightSkill;
-	private Point pipPoint = new Point(0,0);
+	private Point pipPoint = new Point(0, 0);
 
 	private int clientTick = 0;
 	private int pipWidth, pipHeight;
@@ -68,40 +68,51 @@ public class PictureInPicturePlugin extends Plugin
 	private static final Color DISEASE_BG_COLOR = new Color(63, 50, 20);
 	private static final Color[] DISEASE = {DISEASE_COLOR, DISEASE_BG_COLOR};
 
-	class MoveMouseListener implements MouseListener, MouseMotionListener {
+	class MoveMouseListener implements MouseListener, MouseMotionListener
+	{
 		JFrame target;
 		Point startDrag;
 		Point startLocation;
 
-		public MoveMouseListener(JFrame target) {
+		public MoveMouseListener(JFrame target)
+		{
 			this.target = target;
 		}
 
-		public JFrame getFrame(Container target) {
-			if (target instanceof JFrame) {
+		public JFrame getFrame(Container target)
+		{
+			if (target instanceof JFrame)
+			{
 				return (JFrame) target;
 			}
 			return getFrame(target.getParent());
 		}
 
-		Point getScreenLocation(MouseEvent e) {
+		Point getScreenLocation(MouseEvent e)
+		{
 			Point cursor = e.getPoint();
 			Point target_location = this.target.getLocationOnScreen();
 			return new Point((int) (target_location.getX() + cursor.getX()), (int) (target_location.getY() + cursor.getY()));
 		}
 
-		public void mouseClicked(MouseEvent e) {
+		public void mouseClicked(MouseEvent e)
+		{
 		}
 
-		public void mouseEntered(MouseEvent e) {
+		public void mouseEntered(MouseEvent e)
+		{
 		}
 
-		public void mouseExited(MouseEvent e) {
+		public void mouseExited(MouseEvent e)
+		{
 		}
 
-		public void mousePressed(MouseEvent e) {
-			if (e.isShiftDown()) {
-				if (config.shiftClickAction() == DRAG_MODE) {
+		public void mousePressed(MouseEvent e)
+		{
+			if (e.isShiftDown())
+			{
+				if (config.shiftClickAction() == DRAG_MODE)
+				{
 					this.startDrag = this.getScreenLocation(e);
 					this.startLocation = this.target.getLocation();
 				}
@@ -118,7 +129,8 @@ public class PictureInPicturePlugin extends Plugin
 			}
 			else
 			{
-				if (config.clickAction() == DRAG_MODE) {
+				if (config.clickAction() == DRAG_MODE)
+				{
 					this.startDrag = this.getScreenLocation(e);
 					this.startLocation = this.target.getLocation();
 				}
@@ -135,59 +147,70 @@ public class PictureInPicturePlugin extends Plugin
 			}
 		}
 
-		public void mouseReleased(MouseEvent e) {
+		public void mouseReleased(MouseEvent e)
+		{
 			int newX, newY;
 			int offset = getOffset();
 			Rectangle effectiveScreenArea = getEffectiveScreenArea();
 
-			if (config.quadrantID().getId() == 1) {
+			if (config.quadrantID().getId() == 1)
+			{
 				newX = effectiveScreenArea.width - pipWidth - pipPoint.x - offset;
 				newY = pipPoint.y;
 			}
-			else if (config.quadrantID().getId() == 2) {
+			else if (config.quadrantID().getId() == 2)
+			{
 				newX = pipPoint.x;
 				newY = pipPoint.y;
 			}
-			else if (config.quadrantID().getId() == 3) {
+			else if (config.quadrantID().getId() == 3)
+			{
 				newX = pipPoint.x;
 				newY = effectiveScreenArea.height - pipHeight - pipPoint.y - 2 * config.borderWidth();
 			}
-			else {
+			else
+			{
 				newX = effectiveScreenArea.width - pipWidth - pipPoint.x - offset;
 				newY = effectiveScreenArea.height - pipHeight - pipPoint.y - 2 * config.borderWidth();
 			}
 
-			if (config.preserveShiftDrag()) {
+			if (config.preserveShiftDrag())
+			{
 				configManager.setConfiguration("pip", "paddingX", newX);
 				configManager.setConfiguration("pip", "paddingY", newY);
 			}
 		}
 
-		public void mouseDragged(MouseEvent e) {
+		public void mouseDragged(MouseEvent e)
+		{
 			Point current = this.getScreenLocation(e);
 			Point offset = new Point((int) current.getX() - (int) startDrag.getX(), (int) current.getY() - (int) startDrag.getY());
 			pipPoint = new Point((int) (this.startLocation.getX() + offset.getX()), (int) (this.startLocation.getY() + offset.getY()));
 			target.setLocation(pipPoint);
 		}
 
-		public void mouseMoved(MouseEvent e) {
+		public void mouseMoved(MouseEvent e)
+		{
 		}
 	}
 
 
-	private class pipBar extends JPanel {
+	private class pipBar extends JPanel
+	{
 
 		int maxLevel;
 		int currentLevel;
 		Color[] colors;
 
-		private pipBar(int maxLevel, int currentLevel, Color[] colors) {
+		private pipBar(int maxLevel, int currentLevel, Color[] colors)
+		{
 			this.maxLevel = maxLevel;
 			this.currentLevel = currentLevel;
 			this.colors = colors;
 		}
 
-		private void updateBar(int maxLevel, int currentLevel, Color[] colors) {
+		private void updateBar(int maxLevel, int currentLevel, Color[] colors)
+		{
 			this.maxLevel = maxLevel;
 			this.currentLevel = currentLevel;
 			this.colors = colors;
@@ -195,15 +218,17 @@ public class PictureInPicturePlugin extends Plugin
 		}
 
 		@Override
-		protected void paintComponent(Graphics g) {
+		protected void paintComponent(Graphics g)
+		{
 			super.paintComponent(g);
 			g.setColor(colors[0]);
-			g.fillRect(0,0,config.getBarWidth(),pipHeight);
-			int bgHeight = (int) ((maxLevel - currentLevel)*pipHeight/((float) maxLevel));
+			g.fillRect(0, 0, config.getBarWidth(), pipHeight);
+			int bgHeight = (int) ((maxLevel - currentLevel) * pipHeight / ((float) maxLevel));
 			g.setColor(colors[1]);
 			g.fillRect(0, 0, config.getBarWidth(), bgHeight);
 
-			if (config.barText() && config.getBarWidth() >= 15) {
+			if (config.barText() && config.getBarWidth() >= 15)
+			{
 				g.setFont(FontManager.getRunescapeSmallFont());
 
 				String text = String.valueOf(currentLevel);
@@ -224,7 +249,8 @@ public class PictureInPicturePlugin extends Plugin
 		}
 
 		@Override
-		public Dimension getPreferredSize() {
+		public Dimension getPreferredSize()
+		{
 			return new Dimension(config.getBarWidth(), pipHeight);
 		}
 	}
@@ -264,35 +290,39 @@ public class PictureInPicturePlugin extends Plugin
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN)
+		{
 			destroyPip();
-	}
-
-	@Subscribe
-	public void onGameTick(GameTick tick)
-	{
-		if (!focused) {
-			Window window = javax.swing.FocusManager.getCurrentManager().getActiveWindow();
-			if (window == null && pipFrame == null) {
-				updateHitpoints();
-				updatePrayer();
-				initializePip();
-				log.debug("PIP initialized");
-			}
 		}
 	}
 
 	@Subscribe
 	public void onClientTick(ClientTick event)
 	{
-		if(clientTick % config.redrawRate().getId()==0) {
+		if (!focused)
+		{
+			Window window = javax.swing.FocusManager.getCurrentManager().getActiveWindow();
+			if (window == null && pipFrame == null)
+			{
+				updateHitpoints();
+				updatePrayer();
+				initializePip();
+			}
+		}
+
+		if (clientTick % config.redrawRate().getId() == 0)
+		{
 			clientTick = 0;
 
-			if (focused != clientUi.isFocused()) {
+			if (focused != clientUi.isFocused())
+			{
 				focused = clientUi.isFocused();
 				if (focused)
+				{
 					destroyPip();
+				}
 			}
-			if (!focused && pipFrame != null && pipUp) {
+			if (!focused && pipFrame != null && pipUp)
+			{
 				updatePip();
 				//log.debug("PIP updated");
 			}
@@ -300,7 +330,8 @@ public class PictureInPicturePlugin extends Plugin
 		clientTick++;
 
 		//split this from the pip (bars can update more frequently if needed)
-		if (!focused && pipFrame != null && pipUp) {
+		if (!focused && pipFrame != null && pipUp)
+		{
 			updateHitpoints();
 			updatePrayer();
 			updateBars();
@@ -313,24 +344,34 @@ public class PictureInPicturePlugin extends Plugin
 		return configManager.getConfig(PictureInPictureConfig.class);
 	}
 
-	private void updateHitpoints(){
+	private void updateHitpoints()
+	{
 		currentHealth = client.getBoostedSkillLevel(Skill.HITPOINTS);
 		maxHealth = client.getRealSkillLevel(Skill.HITPOINTS);
 		healthColor = HEALTH;
 		int poisonState = client.getVar(VarPlayer.IS_POISONED);
 		if (poisonState >= 1000000)
+		{
 			healthColor = VENOMED;
+		}
 		else if (poisonState > 0)
+		{
 			healthColor = POISONED;
+		}
 		else if (client.getVar(VarPlayer.DISEASE_VALUE) > 0)
+		{
 			healthColor = DISEASE;
+		}
 	}
-	private void updatePrayer(){
+
+	private void updatePrayer()
+	{
 		currentPrayer = client.getBoostedSkillLevel(Skill.PRAYER);
 		maxPrayer = client.getRealSkillLevel(Skill.PRAYER);
 	}
 
-	private void startPip(Image image) {
+	private void startPip(Image image)
+	{
 
 		int position = config.barPosition().getPosition();
 		leftSkill = config.leftBar().getSkill();
@@ -338,96 +379,140 @@ public class PictureInPicturePlugin extends Plugin
 
 		int offset = getOffset();
 
-		SwingUtilities.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable()
+		{
 			@Override
-			public void run() {
-				if (config.limitedDimension().toString().equals("Width")) {
-					pipWidth = config.targetSize().getWidth();
-					pipScale = (double) pipWidth / (double) image.getWidth(null) ;
-					pipHeight = (int) (image.getHeight(null) * pipScale);
+			public void run()
+			{
+				if (!pipUp)
+				{
+
+					log.debug("Initializing PIP");
+
+					if (config.limitedDimension().toString().equals("Width"))
+					{
+						pipWidth = config.targetSize().getWidth();
+						pipScale = (double) pipWidth / (double) image.getWidth(null);
+						pipHeight = (int) (image.getHeight(null) * pipScale);
+					}
+					else
+					{
+						pipHeight = config.targetSize().getHeight();
+						pipScale = (double) pipHeight / (double) image.getHeight(null);
+						pipWidth = (int) (image.getWidth(null) * pipScale);
+					}
+
+					Image img = pipScale(image);
+					ImageIcon icon = new ImageIcon(img);
+
+					pipFrame = new JFrame("Picture in Picture");
+					pipFrame.setFocusableWindowState(false);
+					pipFrame.setType(Window.Type.UTILITY);
+					pipFrame.setLayout(new FlowLayout(FlowLayout.LEFT, config.borderWidth(), config.borderWidth()));
+					pipFrame.setSize(img.getWidth(null) + offset, img.getHeight(null));
+					lbl = new JLabel();
+					lbl.setIcon(icon);
+					pipFrame.setUndecorated(true);
+
+					//pull in bar info from config
+					if (leftSkill == Skill.HITPOINTS)
+					{
+						leftBar = new pipBar(maxHealth, currentHealth, healthColor);
+					}
+					else if (leftSkill == Skill.PRAYER)
+					{
+						leftBar = new pipBar(maxPrayer, currentPrayer, PRAYER);
+					}
+					if (rightSkill == Skill.HITPOINTS)
+					{
+						rightBar = new pipBar(maxHealth, currentHealth, healthColor);
+					}
+					else if (rightSkill == Skill.PRAYER)
+					{
+						rightBar = new pipBar(maxPrayer, currentPrayer, PRAYER);
+					}
+
+					//set the order of bars and pip window
+					if (position == 0)
+					{
+						if (leftSkill != null)
+						{
+							pipFrame.add(leftBar);
+						}
+						if (rightSkill != null)
+						{
+							pipFrame.add(rightBar);
+						}
+						pipFrame.add(lbl);
+					}
+					else if (position == 1)
+					{
+						pipFrame.add(lbl);
+						if (leftSkill != null)
+						{
+							pipFrame.add(leftBar);
+						}
+						if (rightSkill != null)
+						{
+							pipFrame.add(rightBar);
+						}
+					}
+					else
+					{
+						if (leftSkill != null)
+						{
+							pipFrame.add(leftBar);
+						}
+						pipFrame.add(lbl);
+						if (rightSkill != null)
+						{
+							pipFrame.add(rightBar);
+						}
+					}
+
+					pipFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					pipFrame.setAlwaysOnTop(true);
+
+					MoveMouseListener listener = new MoveMouseListener(pipFrame);
+					pipFrame.addMouseListener(listener);
+					pipFrame.addMouseMotionListener(listener);
+
+					//get effective screen area
+					Rectangle effectiveScreenArea = getEffectiveScreenArea();
+
+					//set location
+					if (config.quadrantID().getId() == 1)
+					{
+						pipPoint.setLocation(effectiveScreenArea.width - pipWidth - config.paddingX() - offset, config.paddingY());
+					}
+					else if (config.quadrantID().getId() == 2)
+					{
+						pipPoint.setLocation(config.paddingX(), config.paddingY());
+					}
+					else if (config.quadrantID().getId() == 3)
+					{
+						pipPoint.setLocation(config.paddingX(), effectiveScreenArea.height - pipHeight - config.paddingY() - 2 * config.borderWidth());
+					}
+					else
+					{
+						pipPoint.setLocation(effectiveScreenArea.width - pipWidth - config.paddingX() - offset, effectiveScreenArea.height - pipHeight - config.paddingY() - 2 * config.borderWidth());
+					}
+
+					pipFrame.setLocation(pipPoint);
+
+					// Display the window.
+					pipFrame.pack();
+					pipFrame.setVisible(true);
+					pipUp = true;
+
+					log.debug("PIP initialized");
 				}
-				else {
-					pipHeight = config.targetSize().getHeight();
-					pipScale = (double) pipHeight / (double) image.getHeight(null);
-					pipWidth = (int) (image.getWidth(null) * pipScale);
-				}
-
-				Image img = pipScale(image);
-				ImageIcon icon=new ImageIcon(img);
-
-				pipFrame=new JFrame();
-				pipFrame.setFocusableWindowState(false);
-				pipFrame.setType(Window.Type.UTILITY);
-				pipFrame.setLayout(new FlowLayout(FlowLayout.LEFT, config.borderWidth(), config.borderWidth()));
-				pipFrame.setSize(img.getWidth(null) + offset, img.getHeight(null));
-				lbl=new JLabel();
-				lbl.setIcon(icon);
-				pipFrame.setUndecorated(true);
-
-				//pull in bar info from config
-				if (leftSkill == Skill.HITPOINTS)
-					leftBar = new pipBar(maxHealth, currentHealth, healthColor);
-				else if (leftSkill == Skill.PRAYER)
-					leftBar = new pipBar(maxPrayer, currentPrayer, PRAYER);
-				if (rightSkill == Skill.HITPOINTS)
-					rightBar = new pipBar(maxHealth, currentHealth, healthColor);
-				else if (rightSkill == Skill.PRAYER)
-					rightBar = new pipBar(maxPrayer, currentPrayer, PRAYER);
-
-				//set the order of bars and pip window
-				if (position == 0) {
-					if (leftSkill != null)
-						pipFrame.add(leftBar);
-					if (rightSkill != null)
-						pipFrame.add(rightBar);
-					pipFrame.add(lbl);
-				}
-				else if (position ==1) {
-					pipFrame.add(lbl);
-					if (leftSkill != null)
-						pipFrame.add(leftBar);
-					if (rightSkill != null)
-						pipFrame.add(rightBar);
-				}
-				else {
-					if (leftSkill != null)
-						pipFrame.add(leftBar);
-					pipFrame.add(lbl);
-					if (rightSkill != null)
-						pipFrame.add(rightBar);
-				}
-
-				pipFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				pipFrame.setAlwaysOnTop(true);
-
-				MoveMouseListener listener = new MoveMouseListener(pipFrame);
-				pipFrame.addMouseListener(listener);
-				pipFrame.addMouseMotionListener(listener);
-
-				//get effective screen area
-				Rectangle effectiveScreenArea = getEffectiveScreenArea();
-
-				//set location
-				if (config.quadrantID().getId() == 1)
-					pipPoint.setLocation(effectiveScreenArea.width - pipWidth - config.paddingX() - offset,config.paddingY());
-				else if (config.quadrantID().getId() == 2)
-					pipPoint.setLocation(config.paddingX(),config.paddingY());
-				else if (config.quadrantID().getId() == 3)
-					pipPoint.setLocation(config.paddingX(),effectiveScreenArea.height - pipHeight - config.paddingY() - 2 * config.borderWidth());
-				else
-					pipPoint.setLocation(effectiveScreenArea.width - pipWidth - config.paddingX() - offset,effectiveScreenArea.height - pipHeight - config.paddingY() - 2 * config.borderWidth());
-
-				pipFrame.setLocation(pipPoint);
-
-				// Display the window.
-				pipFrame.pack();
-				pipFrame.setVisible(true);
-				pipUp = true;
 			}
 		});
 	}
 
-	private Rectangle getEffectiveScreenArea() {
+	private Rectangle getEffectiveScreenArea()
+	{
 		GraphicsConfiguration gc = clientUi.getGraphicsConfiguration();
 		Rectangle bounds = gc.getBounds();
 		Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
@@ -439,21 +524,40 @@ public class PictureInPicturePlugin extends Plugin
 		return effectiveScreenArea;
 	}
 
-	private int getOffset() {
+	private int getOffset()
+	{
 		return 2 * config.borderWidth() + ((leftSkill != null) ? config.borderWidth() + config.getBarWidth() : 0) + ((rightSkill != null) ? config.borderWidth() + config.getBarWidth() : 0);
 	}
 
-	private void destroyPip() {
-		if (pipFrame != null) {
+	private void destroyPip()
+	{
+
+		// Destroy the PIP Frame
+		if (pipFrame != null)
+		{
 			pipFrame.setVisible(false);
 			pipFrame.dispose();
 			pipFrame = null;
 			pipUp = false;
+			log.debug("PIP destroyed");
+		}
+
+		// Clear out anything else that gets "stuck"
+		for (Frame frame : Frame.getFrames())
+		{
+			if (frame.getTitle() != null && frame.getTitle().equals("Picture in Picture"))
+			{
+				frame.setVisible(false);
+				frame.dispose();
+				frame = null;
+				log.debug("PIP cleanup");
+			}
 		}
 	}
 
 	//runs first to initialize pip
-	private void initializePip() {
+	private void initializePip()
+	{
 		Consumer<Image> imageCallback = (img) ->
 		{
 			executor.submit(() -> startPip(img));
@@ -462,7 +566,8 @@ public class PictureInPicturePlugin extends Plugin
 	}
 
 	//updates if pip is already up
-	private void updatePip() {
+	private void updatePip()
+	{
 		Consumer<Image> imageCallback = (img) ->
 		{
 			executor.submit(() -> updatePip(img));
@@ -471,10 +576,13 @@ public class PictureInPicturePlugin extends Plugin
 	}
 
 	//update image
-	private void updatePip (Image image) {
-		SwingUtilities.invokeLater(new Runnable() {
+	private void updatePip(Image image)
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				Image img = pipScale(image);
 				ImageIcon icon = new ImageIcon(img);
 				icon.getImage().flush();
@@ -484,31 +592,45 @@ public class PictureInPicturePlugin extends Plugin
 	}
 
 	//update bars
-	private void updateBars () {
-		SwingUtilities.invokeLater(new Runnable() {
+	private void updateBars()
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				if (leftSkill == Skill.HITPOINTS)
+				{
 					leftBar.updateBar(maxHealth, currentHealth, healthColor);
+				}
 				else if (leftSkill == Skill.PRAYER)
+				{
 					leftBar.updateBar(maxPrayer, currentPrayer, PRAYER);
+				}
 				if (rightSkill == Skill.HITPOINTS)
+				{
 					rightBar.updateBar(maxHealth, currentHealth, healthColor);
+				}
 				else if (rightSkill == Skill.PRAYER)
+				{
 					rightBar.updateBar(maxPrayer, currentPrayer, PRAYER);
+				}
 			}
 		});
 	}
 
-	private Image pipScale(Image originalImage) {
+	private Image pipScale(Image originalImage)
+	{
 
 		int samples = config.renderQuality().getRedraw();
 		RenderingHints hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		hints.add(new RenderingHints(RenderingHints.KEY_RENDERING, config.renderQuality().getQuality()));
 		hints.add(new RenderingHints(RenderingHints.KEY_INTERPOLATION, config.renderQuality().getHint()));
 
-		if (pipScale>1)
+		if (pipScale > 1)
+		{
 			return originalImage;
+		}
 
 		BufferedImage returnImage = (BufferedImage) originalImage;
 
@@ -517,13 +639,16 @@ public class PictureInPicturePlugin extends Plugin
 		int incW = (w - pipWidth) / samples;
 		int incH = (h - pipHeight) / samples;
 
-		for (int i=1; i<=samples; i++) {
+		for (int i = 1; i <= samples; i++)
+		{
 
-			if (i==samples) {
+			if (i == samples)
+			{
 				w = pipWidth;
 				h = pipHeight;
 			}
-			else {
+			else
+			{
 				w -= incW;
 				h -= incH;
 			}

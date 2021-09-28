@@ -9,6 +9,11 @@ Allows for displaying RuneLite in "Picture in Picture" mode when focus is elsewh
 
 ## Change Log
 
+### 1.4.1
+- Updated to initialize picture in picture faster
+- Fixed issue where PIP would get "stuck" after returning focus to RL
+- Code formatting
+
 ### 1.4
 - Added configurable Click and Shift+Click options
 - Added functionality to drag the picture in picture window to a new position
