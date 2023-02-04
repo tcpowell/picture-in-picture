@@ -349,7 +349,7 @@ public class PictureInPicturePlugin extends Plugin
 		currentHealth = client.getBoostedSkillLevel(Skill.HITPOINTS);
 		maxHealth = client.getRealSkillLevel(Skill.HITPOINTS);
 		healthColor = HEALTH;
-		int poisonState = client.getVar(VarPlayer.IS_POISONED);
+		int poisonState = client.getVarpValue(VarPlayer.IS_POISONED);
 		if (poisonState >= 1000000)
 		{
 			healthColor = VENOMED;
@@ -358,7 +358,7 @@ public class PictureInPicturePlugin extends Plugin
 		{
 			healthColor = POISONED;
 		}
-		else if (client.getVar(VarPlayer.DISEASE_VALUE) > 0)
+		else if (client.getVarpValue(VarPlayer.DISEASE_VALUE) > 0)
 		{
 			healthColor = DISEASE;
 		}
