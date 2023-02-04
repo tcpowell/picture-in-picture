@@ -1,6 +1,8 @@
 # Picture in Picture
 Allows for displaying RuneLite in "Picture in Picture" mode when focus is elsewhere.
 
+> :warning: **WARNING**: Reduce ***Redraw Rate*** and ***Render Quality*** configuration options to lower CPU usage.
+
 ## Configuration Options
 ![](https://github.com/tcpowell/images/blob/master/picture-in-picture-config.png)
 
