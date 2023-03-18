@@ -11,6 +11,9 @@ Allows for displaying RuneLite in "Picture in Picture" mode when focus is elsewh
 
 ## Change Log
 
+### 1.4.2
+- Variable tweaks
+
 ### 1.4.1
 - Updated to initialize picture in picture faster
 - Fixed issue where PIP would get "stuck" after returning focus to RL
