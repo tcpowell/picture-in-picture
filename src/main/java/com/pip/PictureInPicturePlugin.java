@@ -183,6 +183,13 @@ public class PictureInPicturePlugin extends Plugin
 
 		public void mouseDragged(MouseEvent e)
 		{
+			// A drag is only valid when mousePressed entered drag mode and recorded a start point.
+			// Otherwise (e.g. the click action is focus rather than drag) these are null.
+			if (this.startDrag == null || this.startLocation == null)
+			{
+				return;
+			}
+
 			Point current = this.getScreenLocation(e);
 			Point offset = new Point((int) current.getX() - (int) startDrag.getX(), (int) current.getY() - (int) startDrag.getY());
 			pipPoint = new Point((int) (this.startLocation.getX() + offset.getX()), (int) (this.startLocation.getY() + offset.getY()));
